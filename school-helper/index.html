@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Школьный помощник</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>👋 Школьный помощник</h1>
+    <p>Выбери профиль под свой предмет</p>
+  </header>
+
+  <main class="profiles">
+    <div class="card">
+      <h2>🧮 Физмат</h2>
+      <p>Математика, физика, формулы, калькуляторы, конвертеры.</p>
+      <a href="profile-math-physics.html" class="btn">Открыть профиль</a>
+    </div>
+
+    <div class="card">
+      <h2>🌿 Химбио</h2>
+      <p>Химия, биология, реакции, таблицы, карточки.</p>
+      <a href="profile-bio-chem.html" class="btn">Открыть профиль</a>
+    </div>
+
+    <div class="card">
+      <h2>📚 Гуманитарий</h2>
+      <p>История, обществознание, даты, термины.</p>
+      <a href="profile-humanities.html" class="btn">Открыть профиль</a>
+    </div>
+  </main>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
+  </script>
+</body>
+</html>
