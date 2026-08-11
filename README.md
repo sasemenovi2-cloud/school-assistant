@@ -1,0 +1,2 @@
+# school-assistant
+школьный помощник
