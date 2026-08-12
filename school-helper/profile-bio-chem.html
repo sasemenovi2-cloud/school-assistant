@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Профиль «ХимБио» — Школьный помощник</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #eafaf1;
+      color: #333;
+    }
+    h2 {
+      color: #27ae60;
+      border-bottom: 2px solid #e0f2e6;
+      padding-bottom: 8px;
+    }
+    .section-block {
+      background: white;
+      padding: 18px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .formula-box, .reaction-box, .process-box {
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      border-left: 4px solid #3498db;
+    }
+    .formula-name {
+      font-weight: bold;
+      color: #277527;
+    }
+    .reaction-eq {
+      font-family: 'Courier New', monospace;
+      font-size: 1.1em;
+      color: #0056b3;
+      white-space: pre-wrap;
+    }
+    .process-step {
+      margin: 6px 0;
+      padding: 6px;
+      background: #f8f9fa;
+      border-left: 3px solid #2980b9;
+    }
+    .card-box {
+      background: white;
+      padding: 16px;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+    .btn {
+      padding: 10px 20px;
+      cursor: pointer;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+    .btn:hover {
+      background: #2980b9;
+    }
+    .answer-area {
+      margin-top: 12px;
+      display: none;
+      color: #2c3e50;
+      font-weight: bold;
+    }
+  </style>
+  <!-- Подключаем словарь с данными -->
+  <script src="dictionary.js"></script>
+</head>
+<body>
+  <h2>🧪 Профиль «ХимБио»: химия и биология</h2>
+
+  <!-- Формулы (физика/математика) -->
+  <div class="section-block">
+    <h3>📐 Формулы для задач (механика, термодинамика, электричество)</h3>
+    <div id="formulas-list"></div>
+    <script>
+      const list = document.getElementById('formulas-list');
+      const categories = ['mechanics', 'thermodynamics', 'electricity'];
+      categories.forEach(cat => {
+        list.innerHTML += `<h4 style="color:#2c3e50; margin-top:16px;">${cat}</h4>`;
+        mathPhysicsData[cat].forEach(f => {
+          list.innerHTML += `
+            <div class="formula-box">
+              <div class="formula-name">${f.name}</div>
+              <b>${f.formula}</b><br>
+              <small>${f.example}</small>
+            </div>`;
+        });
+      });
+    </script>
+  </div>
+
+  <!-- Химические реакции -->
+  <div class="section-block">
+    <h3>🧬 Химические реакции (неорганика + органика)</h3>
+    <div id="reactions-list"></div>
+    <script>
+      const rList = document.getElementById('reactions-list');
+      bioChemData.reactions.forEach(r => {
+        rList.innerHTML += `
+          <div class="reaction-box">
+            <div class="reaction-eq">${r.eq}</div>
+            <small>Тип: ${r.type} — признак: ${r.sign}</small>
+          </div>`;
+      });
+    </script>
+  </div>
+
+  <!-- Биологические процессы -->
+  <div class="section-block">
+    <h3>🌿 Биологические процессы (по шагам)</h3>
+    <div id="processes-list"></div>
+    <script>
+      const pList = document.getElementById('processes-list');
+      bioChemData.processes.forEach(p => {
+        pList.innerHTML += `
+          <div>
+            <strong>${p.name}:</strong><br>
+            ${p.steps.map(s => `<div class="process-step">${s}</div>`).join('')}
+          </div><br>`;
+      });
+    </script>
+  </div>
+
+  <!-- Карточки по биотерминам -->
+  <div class="section-block">
+    <h3>🎯 Карточки: термины по биологии</h3>
+    <button id="bio-card-btn" class="btn">Показать карточку</button>
+    <div id="bio-card" style="margin-top:15px;"></div>
+    <script>
+      document.getElementById('bio-card-btn').addEventListener('click', () => {
+        const t = bioChemData.bioTerms[Math.floor(Math.random() * bioChemData.bioTerms.length)];
+        document.getElementById('bio-card').innerHTML = `
+          <div class="card-box">
+            <h4>❓ Что это?</h4>
+            <p style="font-size:1.2em; font-weight:bold;">${t.term}</p>
+            <button onclick="this.parentElement.querySelector('.answer-area').style.display='block'" class="btn" style="background:#f1c40f; color:#333;">Показать ответ</button>
+            <div class="answer-area">
+              ${t.desc}
+            </div>
+          </div>`;
+      });
+    </script>
+  </div>
+
+  <!-- Мини-викторина по химбио -->
+  <div class="section-block">
+    <h3>📝 Мини-викторина (3 вопроса)</h3>
+    <div id="quiz-area"></div>
+    <button id="submit-quiz" class="btn" style="background:#e74c3c; margin-top:10px;">Проверить ответы</button>
+    <p id="quiz-result" style="margin-top:12px; font-weight:bold;"></p>
+    <script>
+      const quizArea = document.getElementById('quiz-area');
+
+      function makeQuiz() {
+        const questions = [];
+        for (let i = 0; i < 3; i++) {
+          if (Math.random() > 0.5) {
+            // Вопрос по реакции
+            const r = bioChemData.reactions[Math.floor(Math.random() * bioChemData.reactions.length)];
+            questions.push({ q: `Какая реакция: ${r.eq}?`, a: r.type, type: 'reaction' });
+          } else {
+            // Вопрос по биотермину
+            const t = bioChemData.bioTerms[Math.floor(Math.random() * bioChemData.bioTerms.length)];
+            questions.push({ q: `Что означает термин: ${t.term}?`, a: t.desc, type: 'bio' });
+          }
+        }
+        quizArea.innerHTML = questions.map((q, i) => `
+          <div style="margin:12px 0;">
+            <span>${i+1}. ${q.q}</span><br>
+            <input type="text" class="answer-input" data-correct="${q.a}" style="width:100%; padding:8px; margin-top:6px; border:1px solid #ccc; border-radius:4px;">
+          </div>`).join('');
+      }
+      makeQuiz();
+
+      document.getElementById('submit-quiz').addEventListener('click', () => {
+        let correct = 0;
+        document.querySelectorAll('.answer-input').forEach(inp => {
+          const correctAnswer = inp.getAttribute('data-correct').toLowerCase();
+          const userAnswer = inp.value.trim().toLowerCase();
+          // Простая проверка: если совпадает хотя бы на 70% по словам
+          if (correctAnswer.includes(userAnswer) || userAnswer.includes(correctAnswer)) {
+            correct++;
+          }
+        });
+        document.getElementById('quiz-result').textContent = `Ты ответил правильно на ${correct} из 3.`;
+      });
+    </script>
+  </div>
+</body>
+</html>

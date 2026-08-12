@@ -1,0 +1,132 @@
+<!-- humanities.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Профиль «Гуманитарий» — Школьный помощник</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: #fdfcfd; color: #333; }
+    h2 { color: #c0392b; border-bottom: 2px solid #eee; padding-bottom: 8px; }
+    .search-box { width: 100%; padding: 12px; margin-bottom: 16px; border: 1px solid #ccc; border-radius: 6px; }
+    .card-container { display: flex; flex-wrap: wrap; gap: 12px; }
+    .card {
+      flex: 1 1 220px; background: white; padding: 16px; border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06); border-left: 5px solid #c0392b;
+    }
+    .card h3 { margin: 0 0 8px 0; color: #2c3e50; }
+    .card p { margin: 0; color: #666; }
+    .section-block { background: white; padding: 18px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .quiz-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+    .answer-input { padding: 8px; flex: 1; border: 1px solid #ddd; border-radius: 4px; }
+  </style>
+  <!-- Подключаем словарь -->
+  <script src="dictionary.js"></script>
+</head>
+<body>
+  <h2>📖 Профиль «Гуманитарий»: обществознание и история</h2>
+
+  <div class="section-block">
+    <h3>🔍 Быстрый поиск по терминам и датам</h3>
+    <input type="text" id="search-input" class="search-box" placeholder="Например: инфляция, 1945, монархия...">
+    <div id="search-result" style="margin-top:12px;"></div>
+  </div>
+
+  <div class="section-block">
+    <h3>🃏 Карточки для запоминания</h3>
+    <div style="text-align:center; margin:20px 0;">
+      <button id="next-card-btn" style="padding:10px 20px; cursor:pointer; background:#3498db; color:white; border:none; border-radius:6px;">Следующая карточка</button>
+    </div>
+    <div id="card-area" style="min-height:100px;"></div>
+  </div>
+
+  <div class="section-block">
+    <h3>📝 Мини‑викторина (3 вопроса)</h3>
+    <div id="quiz-area"></div>
+    <button id="submit-quiz" style="margin-top:16px; padding:10px 20px; background:#2ecc71; color:white; border:none; border-radius:6px; cursor:pointer;">Проверить ответы</button>
+    <p id="quiz-result" style="margin-top:10px; font-weight:bold;"></p>
+  </div>
+
+  <script>
+    const searchInput = document.getElementById('search-input');
+    const resultDiv = document.getElementById('search-result');
+
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      if (!q) { resultDiv.textContent = ''; return; }
+
+      // Термины
+      const term = humanitiesData.terms[q];
+      if (term) {
+        resultDiv.innerHTML = `<b>${q}</b>: ${term}`;
+        return;
+      }
+
+      // Даты
+      const dateEvent = humanitiesData.dates.find(d => d.year === q);
+      if (dateEvent) {
+        resultDiv.innerHTML = `${dateEvent.year}: ${dateEvent.event}`;
+        return;
+      }
+
+      resultDiv.textContent = 'Ничего не найдено. Попробуй другое слово.';
+    });
+
+    // Карточки
+    const cardArea = document.getElementById('card-area');
+    document.getElementById('next-card-btn').addEventListener('click', () => {
+      const isTerm = Math.random() > 0.5;
+      let q, a;
+      if (isTerm) {
+        const terms = Object.entries(humanitiesData.terms);
+        const [t, d] = terms[Math.floor(Math.random() * terms.length)];
+        q = `Что такое ${t}?`; a = d;
+      } else {
+        const ev = humanitiesData.dates[Math.floor(Math.random() * humanitiesData.dates.length)];
+        q = `${ev.year} — что произошло?`; a = ev.event;
+      }
+      cardArea.innerHTML = `
+        <div class="card">
+          <h3>❓ Вопрос</h3>
+          <p>${q}</p>
+          <button onclick="this.parentElement.querySelector('.answer').style.display='block'" style="margin-top:8px; padding:6px 12px; background:#f1c40f; border:none; border-radius:4px; cursor:pointer;">Показать ответ</button>
+          <div class="answer" style="display:none; margin-top:8px; color:#2c3e50; font-weight:bold;">✅ Ответ: ${a}</div>
+        </div>`;
+    });
+
+    // Викторина
+    const quizArea = document.getElementById('quiz-area');
+    function makeQuiz() {
+      const questions = [];
+      for (let i = 0; i < 3; i++) {
+        if (Math.random() > 0.5) {
+          const terms = Object.entries(humanitiesData.terms);
+          const [t, d] = terms[Math.floor(Math.random() * terms.length)];
+          questions.push({ q: `Что такое ${t}?`, a: d, type: 'term' });
+        } else {
+          const ev = humanitiesData.dates[Math.floor(Math.random() * humanitiesData.dates.length)];
+          questions.push({ q: `${ev.year} — событие?`, a: ev.event, type: 'date' });
+        }
+      }
+      quizArea.innerHTML = questions.map((q, i) => `
+        <div class="quiz-row">
+          <span>${i+1}. ${q.q}</span>
+          <input type="text" class="answer-input" data-correct="${q.a}">
+        </div>`).join('');
+    }
+    makeQuiz();
+
+    document.getElementById('submit-quiz').addEventListener('click', () => {
+      let correct = 0;
+      document.querySelectorAll('.answer-input').forEach(inp => {
+        const correctAnswer = inp.getAttribute('data-correct').toLowerCase();
+        const userAnswer = inp.value.trim().toLowerCase();
+        // Простая проверка: если совпадает хотя бы на 70% по словам
+        if (correctAnswer.includes(userAnswer) || userAnswer.includes(correctAnswer)) {
+          correct++;
+        }
+      });
+      document.getElementById('quiz-result').textContent = `Ты ответил правильно на ${correct} из 3.`;
+    });
+  </script>
+</body>
+</html>

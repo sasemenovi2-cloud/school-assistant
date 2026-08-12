@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Физмат — Школьный помощник</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav><a href="index.html">← Назад к профилям</a></nav>
+  <h1>🧮 Профиль: Физмат</h1>
+
+  <!-- Блок: калькулятор км/ч → м/с -->
+  <section class="tool-card">
+    <h3>Конвертер: км/ч → м/с</h3>
+    <input type="number" id="kmh" placeholder="Скорость в км/ч">
+    <button onclick="convertSpeed()">Перевести</button>
+    <p><b>Результат:</b> <span id="speedResult"></span> м/с</p>
+  </section>
+
+  <!-- Блок: формулы -->
+  <section class="tool-card">
+    <h3>Формулы</h3>
+    <ul id="formulasList"></ul>
+  </section>
+
+  <script src="dictionary.js"></script>
+  <script>
+    function convertSpeed() {
+      const kmh = Number(document.getElementById('kmh').value) || 0;
+      const ms = (kmh * 1000) / 3600;
+      document.getElementById('speedResult').textContent = ms.toFixed(2);
+    }
+
+    // Вывод формул
+    const list = document.getElementById('formulasList');
+    mathPhysicsData.formulas.forEach(item => {
+      const li = document.createElement('li');
+      li.innerHTML = `<b>${item.name}</b>: ${item.formula} (пример: ${item.example})`;
+      list.appendChild(li);
+    });
+  </script>
+</body>
+</html>
